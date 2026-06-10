@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroFlow · Manager Performance Training</title>
+<style>
+:root {
+  --primary:       #161B4A;
+  --blue:          #2E4799;
+  --light-blue:    #478FCC;
+  --teal:          #4CB6AC;
+  --accent:        #F16061;
+  --text:          #111827;
+  --muted:         #6B7280;
+  --border:        #E5E7EB;
+  --card-bg:       #EBF8F6;
+  --card-border:   rgba(76,182,172,0.28);
+  --prog-bg:       #D1D5DB;
+  --bg:            #FFFFFF;
+  --surface:       #F9FAFB;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── Page wrapper ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── Top bar ── */
+.topbar {
+  padding: 18px 48px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-back {
+  cursor: pointer;
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.topbar-back:hover { text-decoration: underline; }
+
+/* ── Home ── */
+.home-wrap { max-width: 860px; margin: 0 auto; padding: 40px 48px 80px; }
+
+.home-label { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+
+.home-title {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.home-sub { font-size: 16px; color: var(--muted); margin-bottom: 40px; }
+
+/* ── Module grid ── */
+.module-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.module-wrapper { display: flex; flex-direction: column; }
+
+.module-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 22px 22px 18px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.15s;
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.module-card:hover { box-shadow: 0 4px 16px rgba(22,27,74,0.1); transform: translateY(-1px); }
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.track-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+.badge-core { background: #EEF2FF; color: var(--blue); }
+.badge-adv  { background: #F0FDF9; color: #0D766E; }
+.badge-cap  { background: #FFF7ED; color: #C2410C; }
+
+.card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.card-meta { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+
+.prog-track {
+  height: 5px;
+  background: var(--prog-bg);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.prog-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.card-count { font-size: 12px; color: var(--muted); }
+
+.card-cta {
+  width: 100%;
+  padding: 11px 0;
+  margin-top: 10px;
+  border: 1.5px solid var(--blue);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.1px;
+}
+
+.card-cta:hover { background: #EEF2FF; }
+
+.card-cta.done {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+/* ── Module content ── */
+.module-wrap { max-width: 760px; margin: 0 auto; padding: 40px 48px 80px; }
+
+.mod-tag { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--teal); margin-bottom: 8px; }
+
+.mod-title { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.25; }
+
+.mod-sub { font-size: 15px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+.mod-divider { height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--primary), var(--teal)); margin-bottom: 32px; }
+
+/* Content blocks */
+.content-section { margin-bottom: 28px; }
+
+.content-h { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+
+.content-p { font-size: 14px; line-height: 1.75; color: #374151; margin-bottom: 10px; }
+
+.content-p:last-child { margin-bottom: 0; }
+
+/* Info callout */
+.callout {
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.callout.blue  { background: #EFF6FF; border-left: 3px solid var(--light-blue); }
+.callout.teal  { background: #F0FDFA; border-left: 3px solid var(--teal); }
+.callout.red   { background: #FFF1F2; border-left: 3px solid var(--accent); }
+.callout.navy  { background: #EEF2FF; border-left: 3px solid var(--blue); }
+.callout-icon  { font-size: 16px; margin-top: 2px; flex-shrink: 0; }
+.callout strong { font-weight: 600; }
+
+/* Data table */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; border-radius: 10px; overflow: hidden; }
+.data-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.data-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); background: white; vertical-align: top; line-height: 1.5; }
+.data-table tr:last-child td { border-bottom: none; }
+
+/* Three-column matrix */
+.matrix { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+.matrix-col {}
+.matrix-head { padding: 12px 14px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: white; }
+.mh-green  { background: #0D9488; }
+.mh-yellow { background: #D97706; }
+.mh-red    { background: var(--accent); }
+.matrix-body { background: white; padding: 14px; }
+.matrix-item { font-size: 13px; padding: 5px 0; border-bottom: 1px solid #F3F4F6; line-height: 1.4; }
+.matrix-item:last-child { border-bottom: none; }
+
+/* Step list */
+.step-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.step-item { display: flex; gap: 14px; background: white; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.step-badge { width: 28px; height: 28px; min-width: 28px; border-radius: 7px; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; letter-spacing: 1px; margin-top: 1px; }
+.step-content {}
+.step-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.step-example { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* 2-col grid */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+
+.mini-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.mini-card-letter { font-size: 26px; font-weight: 900; color: var(--blue); line-height: 1; margin-bottom: 2px; }
+.mini-card-word { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--teal); margin-bottom: 8px; }
+.mini-card-q { font-size: 13px; color: var(--muted); line-height: 1.6; font-style: italic; }
+
+/* Accordion */
+.accordion { margin-bottom: 20px; }
+.acc-item { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; overflow: hidden; background: white; }
+.acc-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text); user-select: none; }
+.acc-header:hover { background: var(--surface); }
+.acc-chevron { font-size: 11px; color: var(--muted); transition: transform 0.2s; }
+.acc-item.open .acc-chevron { transform: rotate(180deg); }
+.acc-body { padding: 0 16px; max-height: 0; overflow: hidden; transition: max-height 0.3s, padding 0.3s; }
+.acc-item.open .acc-body { padding: 0 16px 14px; max-height: 600px; }
+.acc-body p { font-size: 13px; line-height: 1.7; color: var(--muted); margin-bottom: 8px; }
+
+/* Pillar 3-col */
+.pillar-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.pillar { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 20px 16px; text-align: center; }
+.pillar-icon { font-size: 28px; margin-bottom: 10px; }
+.pillar-name { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--blue); margin-bottom: 6px; }
+.pillar-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+/* Rating row */
+.rating-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.rating-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+.rating-num { font-size: 32px; font-weight: 900; line-height: 1; margin-bottom: 5px; }
+.r4 .rating-num { color: var(--teal); }
+.r3 .rating-num { color: var(--light-blue); }
+.r2 .rating-num { color: var(--accent); }
+.r1 .rating-num { color: var(--muted); }
+.rating-text { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* Mistake grid */
+.mistake-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.mistake-card { background: white; border: 1px solid var(--border); border-top: 3px solid var(--accent); border-radius: 10px; padding: 14px; }
+.mistake-title { font-size: 12px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+.mistake-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ── Exercise section ── */
+.exercise-section {
+  margin-top: 48px;
+  padding-top: 36px;
+  border-top: 2px solid var(--border);
+}
+
+.ex-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.ex-badge {
+  background: #FFF7ED;
+  color: #C2410C;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.ex-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+
+.ex-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+
+.ex-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.ex-q-num { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--teal); margin-bottom: 6px; }
+
+.ex-question {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.ex-scenario {
+  background: white;
+  border-left: 3px solid var(--light-blue);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 16px;
+  line-height: 1.65;
+}
+
+.ex-textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  color: var(--text);
+  background: white;
+  line-height: 1.6;
+  transition: border-color 0.2s;
+}
+
+.ex-textarea:focus { outline: none; border-color: var(--teal); }
+
+.ex-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  margin-bottom: 14px;
+}
+
+.ex-word-count { font-size: 12px; color: var(--muted); }
+.ex-word-count.ok { color: var(--teal); }
+.ex-word-count.warn { color: var(--accent); }
+
+.submit-btn {
+  padding: 11px 28px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.submit-btn:hover { background: var(--blue); }
+.submit-btn:disabled { background: var(--muted); cursor: default; }
+
+/* Rubric feedback */
+.rubric-result {
+  margin-top: 16px;
+  display: none;
+}
+
+.rubric-result.show { display: block; }
+
+.rubric-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.rubric-item:last-child { border-bottom: none; }
+
+.rubric-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; width: 18px; }
+
+.rubric-label { color: var(--text); }
+.rubric-label.miss { color: var(--muted); }
+
+.rubric-summary {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.rubric-summary.pass { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+.rubric-summary.fail { background: #FFF1F2; color: #9F1239; border: 1px solid #FECDD3; }
+
+.try-again-btn {
+  margin-top: 12px;
+  padding: 9px 22px;
+  background: transparent;
+  border: 1.5px solid var(--blue);
+  color: var(--blue);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.try-again-btn:hover { background: #EEF2FF; }
+
+/* Complete bar */
+.complete-bar {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  border-top: 1px solid var(--border);
+  padding: 16px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.complete-status { font-size: 14px; color: var(--muted); }
+.complete-status strong { color: var(--text); }
+
+.complete-btn {
+  padding: 11px 32px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.2s;
+}
+
+.complete-btn:not([disabled]):hover { background: var(--blue); }
+
+.complete-btn[disabled] {
+  background: #D1D5DB;
+  color: #9CA3AF;
+  cursor: not-allowed;
+}
+
+/* Quick ref (last page section) */
+.ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.ref-card { background: var(--primary); border-radius: 12px; padding: 20px; }
+.ref-card-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--teal); margin-bottom: 12px; }
+.ref-list { list-style: none; }
+.ref-list li { font-size: 13px; color: rgba(255,255,255,0.82); padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; gap: 10px; line-height: 1.4; }
+.ref-list li:last-child { border-bottom: none; }
+.ref-ck { color: var(--teal); font-size: 12px; flex-shrink: 0; margin-top: 2px; }
+
+@media (max-width: 720px) {
+  .home-wrap, .module-wrap { padding: 24px 20px 60px; }
+  .topbar { padding: 14px 20px; }
+  .module-grid { grid-template-columns: 1fr; }
+  .two-col, .pillar-grid, .rating-row, .mistake-grid, .ref-grid { grid-template-columns: 1fr 1fr; }
+  .matrix { grid-template-columns: 1fr; }
+  .complete-bar { padding: 12px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ HOME ══════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="topbar">NeuroFlow</div>
+  <div class="home-wrap">
+    <div class="home-label">People Operations</div>
+    <h1 class="home-title">Manager Performance Training</h1>
+    <p class="home-sub">Eight self-paced modules. Each module must be completed before moving on.</p>
+
+    <div class="module-grid" id="home-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ MODULE PAGE ══════════════════════ -->
+<div id="page-module" class="page">
+  <div class="topbar">
+    <a class="topbar-back" onclick="goHome()">← All Modules</a>
+    <span style="color:var(--border)">|</span>
+    <span id="mod-topbar-label" style="color:var(--muted)"></span>
+  </div>
+  <div class="module-wrap">
+    <div id="mod-content"></div>
+    <div class="exercise-section" id="ex-section"></div>
+  </div>
+  <div class="complete-bar">
+    <div class="complete-status" id="complete-status">Complete all exercises to unlock this module.</div>
+    <button class="complete-btn" id="complete-btn" disabled onclick="completeModule()">Mark Complete</button>
+  </div>
+</div>
+
+<script>
+// ── State ──
+const completedModules = new Set();
+let currentModule = null;
+let exercisesPassed = {}; // { exIdx: bool }
+
+// ── Module definitions ──
+const MODULES = [
+  {
+    id: 'foundations',
+    num: 1,
+    badge: 'Core',
+    title: 'Foundations of Performance Management',
+    time: '5 min',
+    exCount: 1,
+    content: () => `
+<div class="mod-tag">Module 1</div>
+<h1 class="mod-title">Foundations of Performance Management</h1>
+<p class="mod-sub">At NeuroFlow, performance management is not a once-a-year event — it's a continuous discipline built on everyday habits that happen between reviews.</p>
+<div class="mod-divider"></div>
+
+<div class="callout navy"><div class="callout-icon">📊</div><div><strong>The Business Case:</strong> Companies that prioritize people performance are <strong>4.2× more likely to outperform peers</strong>, realize 30% higher revenue growth, and experience attrition 5 percentage points lower.</div></div>
+
+<div class="content-section">
+  <div class="content-h">Core Philosophy</div>
+  <p class="content-p">Performance management at NeuroFlow is built on six principles: <strong>Early intervention</strong> (address issues while they're still coachable), <strong>Transparency</strong> (no employee should ever be surprised by formal feedback), <strong>Documentation</strong> (records protect both the employee and the company), <strong>Support</strong> (give people the resources they need before escalating), <strong>Dignity</strong> (respect throughout every conversation), and <strong>Equity</strong> (apply standards consistently across remote, hybrid, and in-office employees).</p>
+</div>
+
+<div class="content-section">
+  <div class="content-h">The Manager's 3 Jobs</div>
+  <div class="pillar-grid">
+    <div class="pillar"><div class="pillar-icon">🎯</div><div class="pillar-name">Set Clear Expectations</div><div class="pillar-desc">Every employee should be able to answer: "What does great look like in my role?"</div></div>
+    <div class="pillar"><div class="pillar-icon">👁️</div><div class="pillar-name">Notice & Name</div><div class="pillar-desc">Catch good work and reinforce it. Catch problems early and surface them with care.</div></div>
+    <div class="pillar"><div class="pillar-icon">🤝</div><div class="pillar-name">Help Close the Gap</div><div class="pillar-desc">Coach, remove obstacles, provide resources — or escalate to a more formal process when needed.</div></div>
+  </div>
+</div>
+
+<div class="content-section">
+  <div class="content-h">The Cadence Between Reviews</div>
+  <p class="content-p">The 3PR is NeuroFlow's formal review — but it is not the engine of performance management. The engine is what happens in between:</p>
+  <table class="data-table">
+    <tr><th>Frequency</th><th>Meeting</th><th>Focus</th></tr>
+    <tr><td><strong>Weekly</strong></td><td>1:1 check-in (15–30 min)</td><td>Priorities, blockers, real-time feedback</td></tr>
+    <tr><td><strong>Monthly</strong></td><td>Development chat</td><td>Skill growth, energy, friction, recognition</td></tr>
+    <tr><td><strong>Quarterly</strong></td><td>Career conversation (60+ min)</td><td>Goals, longer-term development, role fit</td></tr>
+    <tr><td><strong>2× per year</strong></td><td>3PR formal review</td><td>Summary of what's been discussed — never a surprise</td></tr>
+  </table>
+</div>
+
+<div class="content-section">
+  <div class="content-h">Your First 30 Days</div>
+  <p class="content-p">Schedule recurring weekly 1:1s with every direct report — 30 minutes, on the calendar, protected. In your first 1:1, ask: <em>"What does great look like in your role? How will we know you're hitting it?"</em> Write down what you hear, share it back, and align on expectations.</p>
+  <p class="content-p">Start a private running notes doc — one per direct report. Add brief, dated entries each week. Practice the SBI feedback framework on <strong>positive feedback first</strong>, before using it for harder conversations.</p>
+</div>
+
+<div class="callout teal"><div class="callout-icon">💡</div><div><strong>Key Principle:</strong> The 3PR should never be the first time an employee hears a performance concern. Everything in the review should reflect conversations already had.</div></div>
+`,
+    exercises: [
+      {
+        qLabel: 'Exercise 1 of 1',
+        question: 'In your own words, describe the Manager\'s 3 Jobs from this module. For each one, give a specific, concrete example of how you will apply it in your first 30 days with your team.',
+        minWords: 80,
+        rubric: [
+          { label: 'Describes setting clear expectations (Job 1)', kw: ['expect','great look like','define','clarify','standard','align on','goal','what great'] },
+          { label: 'Describes noticing and naming performance (Job 2)', kw: ['notice','feedback','observe','catch','reinforce','name','recognize','surface'] },
+          { label: 'Describes helping close the gap (Job 3)', kw: ['coach','support','resource','gap','obstacle','help','improve','close','remove'] },
+          { label: 'Includes at least one first-30-day action', kw: ['30 day','first month','week','1:1','one-on-one','schedule','meeting','start','begin','running notes','notes'] },
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'matrix',
+    num: 2,
+    badge: 'Core',
+    title: 'Coach vs. PIP — Decision Matrix',
+    time: '5 min',
+    exCount: 1,
+    content: () => `
+<div class="mod-tag">Module 2</div>
+<h1 class="mod-title">Coach vs. PIP — Decision Matrix</h1>
+<p class="mod-sub">Use this matrix to determine the right level of intervention. When in doubt, consult your HRBP <em>before</em> moving toward a PIP.</p>
+<div class="mod-divider"></div>
+
+<div class="content-section">
+  <div class="matrix">
+    <div class="matrix-col"><div class="matrix-head mh-green">✅ Coaching Territory</div><div class="matrix-body"><div class="matrix-item">New to role (&lt;6 months)</div><div class="matrix-item">New responsibility</div><div class="matrix-item">Coachable skill gap</div><div class="matrix-item">Willing to improve</div><div class="matrix-item">Intermittent issues</div><div class="matrix-item">No prior feedback on this issue</div></div></div>
+    <div class="matrix-col"><div class="matrix-head mh-yellow">⚠️ Gray Zone — Ask HRBP</div><div class="matrix-body"><div class="matrix-item">Protected class considerations</div><div class="matrix-item">Interpersonal conflict</div><div class="matrix-item">New manager to employee</div><div class="matrix-item">Retaliation concerns</div><div class="matrix-item">Employee raised workplace concerns</div></div></div>
+    <div class="matrix-col"><div class="matrix-head mh-red">🚨 PIP Territory</div><div class="matrix-body"><div class="matrix-item">60+ days of coaching, no improvement</div><div class="matrix-item">Repeated same issues</div><div class="matrix-item">Significantly below standards</div><div class="matrix-item">Material business impact</div><div class="matrix-item">Capability or motivation concern</div></div></div>
+  </div>
+</div>
+
+<div class="callout teal"><div class="callout-icon">🔑</div><div><strong>Key Question:</strong> "Has this employee had a fair chance to understand and correct the issues through coaching?"<br>If <strong>YES</strong> and problems persist → consider escalating toward a PIP. If <strong>NO</strong> → continue coaching with clear documentation.</div></div>
+
+<div class="content-section">
+  <div class="content-h">The "Can't Do / Won't Do" Test</div>
+  <p class="content-p"><strong>Can't do</strong> (lacks skills, knowledge, or capability) → Use coaching, then a PIP if needed. This is a <em>performance</em> issue.</p>
+  <p class="content-p"><strong>Won't do</strong> (chooses not to follow policies or behave appropriately) → Use <em>disciplinary action</em> through your HRBP. This is a <em>misconduct</em> issue — handled completely differently.</p>
+</div>
+
+<div class="content-section">
+  <div class="content-h">PIP vs. Disciplinary Action</div>
+  <div class="accordion">
+    <div class="acc-item" onclick="this.classList.toggle('open')"><div class="acc-header">When is a PIP appropriate? <span class="acc-chevron">▼</span></div><div class="acc-body"><p>PIPs are for performance-related issues where the employee is not meeting job expectations but <strong>has the capability to improve</strong>. PIPs run 30–90 days with regular check-ins. Examples: missing project deadlines despite coaching · work quality below standards · not achieving KPIs · difficulty meeting productivity standards.</p></div></div>
+    <div class="acc-item" onclick="this.classList.toggle('open')"><div class="acc-header">When is disciplinary action appropriate? <span class="acc-chevron">▼</span></div><div class="acc-body"><p>Disciplinary action is for <strong>misconduct or policy violations</strong> — behavioral issues, not skill gaps. Examples: repeated attendance violations · insubordination · inappropriate conduct · policy violations · serious violations (harassment, theft, fraud) requiring immediate action up to termination. <strong>All disciplinary actions require HRBP consultation before implementation.</strong></p></div></div>
+  </div>
+</div>
+
+<div class="callout red"><div class="callout-icon">⚠️</div><div><strong>Never issue a PIP without HRBP approval and involvement.</strong> PIPs are serious legal documents. The PIP template must be reviewed by Legal before use and customized to each employee.</div></div>
+`,
+    exercises: [
+      {
+        qLabel: 'Exercise 1 of 1',
+        scenario: 'An employee who has been on your team for 4 months consistently misses deadlines. You\'ve had 2 coaching conversations. They seem motivated and are genuinely trying. You haven\'t seen improvement yet.',
+        question: 'Walk through your decision-making process using the Decision Matrix. What is the right intervention, and what are your specific next steps?',
+        minWords: 80,
+        rubric: [
+          { label: 'Identifies this as Coaching Territory (not PIP-ready)', kw: ['coaching territory','not ready','still coach','not yet','too early','more coaching','continue coaching','new to','4 month','four month'] },
+          { label: 'Applies the "Can\'t Do / Won\'t Do" test', kw: ["can't do","cannot do","capability","skill gap","won't do","motivated","trying","performance issue","ability"] },
+          { label: 'Plans to consult HRBP before any formal action', kw: ['hrbp','hr','people ops','people operations','consult','check with'] },
+          { label: 'Plans to document the coaching conversations', kw: ['document','notes','written','recap','record','email','24 hour','24-hour','log'] },
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'sbi',
+    num: 3,
+    badge: 'Core',
+    title: 'SBI(I) Feedback Framework',
+    time: '6 min',
+    exCount: 1,
+    content: () => `
+<div class="mod-tag">Module 3</div>
+<h1 class="mod-title">The SBI(I) Feedback Framework</h1>
+<p class="mod-sub">Developed by the Center for Creative Leadership, SBI reduces defensiveness by focusing on observable behavior — not personality or assumed intent. Use it for positive and corrective feedback.</p>
+<div class="mod-divider"></div>
+
+<div class="content-section">
+  <ul class="step-list">
+    <li class="step-item"><div class="step-badge" style="background:#161B4A;">S</div><div class="step-content"><div class="step-label">Situation — Anchor to a specific moment</div><div class="step-example">"In our 11 a.m. team meeting on Tuesday…" — Avoid vague phrasing like "last week" or "sometimes."</div></div></li>
+    <li class="step-item"><div class="step-badge" style="background:#478FCC;">B</div><div class="step-content"><div class="step-label">Behavior — Describe only what you observed</div><div class="step-example">"…you interrupted three times while Priya was presenting." — No interpretation or assumed motive.</div></div></li>
+    <li class="step-item"><div class="step-badge" style="background:#4CB6AC;">I</div><div class="step-content"><div class="step-label">Impact — Explain the effect on people or outcomes</div><div class="step-example">"As a result, we lost the thread of her proposal and the meeting ran 15 minutes long."</div></div></li>
+    <li class="step-item"><div class="step-badge" style="background:#7C6BB5;">I</div><div class="step-content"><div class="step-label">Intent — Ask what was behind the behavior (optional but powerful)</div><div class="step-example">"Can you walk me through what was going on for you at that moment?" — CCL research shows this single addition closes the intent-vs-impact gap that drives most defensiveness.</div></div></li>
+  </ul>
+</div>
+
+<div class="callout teal"><div class="callout-icon">📊</div><div><strong>The 4:1 Ratio:</strong> People need roughly four positive interactions for every one corrective interaction to feel safe and engaged. Use SBI for positive feedback too — specific praise ("In Monday's demo, you reorganized the slides around the customer's top three concerns; the client signed that afternoon") is far more motivating than "great job."</div></div>
+
+<div class="callout blue"><div class="callout-icon">📝</div><div><strong>After every coaching conversation:</strong> Send a brief written recap within 24 hours. Let them know on the call if you plan to CC HR so they are not surprised. The email should make clear this is a performance concern, not just a summary.</div></div>
+`,
+    exercises: [
+      {
+        qLabel: 'Exercise 1 of 1',
+        scenario: 'Your direct report, Alex, submitted a client report yesterday that was missing three key sections the client had specifically requested. The client emailed you this morning asking where the missing sections were.',
+        question: 'Write a complete SBI(I) feedback statement you would use in a 1:1 with Alex. Include all four components — Situation, Behavior, Impact, and an Intent question.',
+        minWords: 50,
+        rubric: [
+          { label: 'Anchors to a specific situation/time', kw: ['yesterday','this morning','report','submitted','client report','tuesday','monday','last','10am','meeting','today'] },
+          { label: 'States observable behavior (not personality or assumptions)', kw: ['missing','did not include','omit','left out','three section','sections were not','not included','wasn\'t included','were missing','lacked'] },
+          { label: 'Describes the impact clearly', kw: ['client','email','asked','gap','impact','result','because','as a result','emailed','reached out','consequence'] },
+          { label: 'Includes an intent question', kw: ['going on','help me understand','walk me through','what happened','can you explain','tell me more','what was','your perspective'] },
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'grow',
+    num: 4,
+    badge: 'Core',
+    title: 'GROW Coaching Model',
+    time: '5 min',
+    exCount: 1,
+    content: () => `
+<div class="mod-tag">Module 4</div>
+<h1 class="mod-title">The GROW Coaching Model</h1>
+<p class="mod-sub">Where SBI helps you <em>deliver</em> feedback, GROW helps you draw solutions out of the employee. Use it when the employee has the capability and you want them to own the path forward.</p>
+<div class="mod-divider"></div>
+
+<div class="two-col">
+  <div class="mini-card"><div class="mini-card-letter">G</div><div class="mini-card-word">Goal</div><div class="mini-card-q">"What do you want to be true by [date]? What does success look like for you?"</div></div>
+  <div class="mini-card"><div class="mini-card-letter" style="color:var(--teal)">R</div><div class="mini-card-word">Reality</div><div class="mini-card-q">"Where are things now? What's working? What's getting in the way?"</div></div>
+  <div class="mini-card"><div class="mini-card-letter" style="color:var(--accent)">O</div><div class="mini-card-word">Options</div><div class="mini-card-q">"What could you try? What else? If anything were possible, what would you do?"</div></div>
+  <div class="mini-card"><div class="mini-card-letter" style="color:#7C6BB5">W</div><div class="mini-card-word">Will</div><div class="mini-card-q">"What will you do, by when? How can I support you? How will we know it's working?"</div></div>
+</div>
+
+<div class="callout navy"><div class="callout-icon">💬</div><div><strong>SBI vs. GROW:</strong> Use <strong>SBI</strong> to name what happened. Use <strong>GROW</strong> to explore the path forward. In practice, a strong coaching conversation often uses both — SBI to surface the issue, GROW to build the solution together.</div></div>
+
+<div class="callout blue"><div class="callout-icon">📝</div><div><strong>Document immediately:</strong> Send a brief email recap within 24 hours. Calendar a follow-up check-in 14–30 days out. Note the conversation in the employee's file.</div></div>
+`,
+    exercises: [
+      {
+        qLabel: 'Exercise 1 of 1',
+        scenario: 'You\'re coaching a team member who wants to improve at leading cross-functional meetings, but isn\'t sure where to start. You decide to use the GROW model.',
+        question: 'Write out the specific question(s) you\'d ask for each step of GROW. Make sure each question genuinely fits that stage of the model.',
+        minWords: 60,
+        rubric: [
+          { label: 'Goal question is outcome-focused', kw: ['goal','look like','success','want to','achieve','by when','outcome','what do you want','ideal','hope for'] },
+          { label: 'Reality question explores current state', kw: ['currently','now','today','where are you','what\'s happening','reality','working','blocking','right now','existing','at the moment'] },
+          { label: 'Options question opens possibilities', kw: ['could you','what if','options','try','consider','possible','approach','alternative','else','another way','could try'] },
+          { label: 'Will question secures commitment to action', kw: ['will you','commit','by when','when will','what will you do','support','accountability','next step','by next','hold you'] },
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'escalation',
+    num: 5,
+    badge: 'Core',
+    title: 'Escalation & HR Protocol',
+    time: '5 min',
+    exCount: 1,
+    content: () => `
+<div class="mod-tag">Module 5</div>
+<h1 class="mod-title">Escalation & HR Protocol</h1>
+<p class="mod-sub">Knowing when to involve HR and Legal is one of the most critical skills for a manager. This module clarifies exactly when to escalate and who handles what.</p>
+<div class="mod-divider"></div>
+
+<div class="content-section">
+  <table class="data-table">
+    <tr><th>Situation</th><th>Who</th><th>Required?</th></tr>
+    <tr><td>Before issuing any PIP</td><td>HRBP</td><td><span style="color:var(--accent);font-weight:700;">Required</span></td></tr>
+    <tr><td>Before pre-PIP formal warning</td><td>HRBP</td><td><span style="color:var(--accent);font-weight:700;">Required</span></td></tr>
+    <tr><td>Employee raises protected concerns (discrimination, harassment, safety)</td><td>HRBP immediately</td><td><span style="color:var(--accent);font-weight:700;">Required</span></td></tr>
+    <tr><td>Considering termination</td><td>HRBP + Legal</td><td><span style="color:var(--accent);font-weight:700;">Required</span></td></tr>
+    <tr><td>Employee pushes back legally on feedback</td><td>HRBP + Legal</td><td><span style="color:var(--accent);font-weight:700;">Required</span></td></tr>
+    <tr><td>After 2–3 coaching conversations without improvement</td><td>HRBP</td><td><span style="color:#D97706;font-weight:700;">Recommended</span></td></tr>
+    <tr><td>First informal coaching conversation</td><td>Proceed independently</td><td><span style="color:var(--muted);">Optional</span></td></tr>
+  </table>
+</div>
+
+<div class="callout teal"><div class="callout-icon">📧</div><div><strong>How to escalate:</strong> Email your HRBP with: (1) a summary of the issue, (2) your coaching timeline and documentation, (3) what specific guidance you need. Request a meeting if the situation is complex.</div></div>
+
+<div class="content-section">
+  <div class="content-h">When HRBP Must Be Present (Not Just Consulted)</div>
+  <p class="content-p">• PIP delivery meeting<br>• PIP conclusion meeting<br>• Termination conversation<br>• Any meeting where the employee has requested HR presence</p>
+</div>
+
+<div class="content-section">
+  <div class="content-h">5-Stage Email Progression</div>
+  <table class="data-table">
+    <tr><th>Stage</th><th>Format</th><th>CC HRBP?</th></tr>
+    <tr><td><strong>1. Informal coaching</strong></td><td>Verbal → brief recap email</td><td>Optional</td></tr>
+    <tr><td><strong>2. Structured feedback</strong></td><td>Formal written memo</td><td>Recommended</td></tr>
+    <tr><td><strong>3. Pre-PIP warning</strong></td><td>Meeting + formal memo</td><td>Required</td></tr>
+    <tr><td><strong>4. PIP initiation</strong></td><td>Formal meeting + PIP document</td><td>Required</td></tr>
+    <tr><td><strong>5–6. PIP check-ins</strong></td><td>Scheduled check-ins + written notes</td><td>Required — every email</td></tr>
+  </table>
+</div>
+`,
+    exercises: [
+      {
+        qLabel: 'Exercise 1 of 1',
+        scenario: 'You\'ve been coaching an employee for 8 weeks on performance issues. You\'re about to send a formal structured feedback memo. The day before you send it, the employee messages you: "I think I\'m being treated differently because of my disability."',
+        question: 'List every step you take next, in order. Be specific about what you do immediately, who you contact, and what you do NOT do until HRBP is involved.',
+        minWords: 60,
+        rubric: [
+          { label: 'Immediately stops — does not send the memo or proceed', kw: ['stop','pause','do not send','hold','postpone','delay','don\'t send','not yet','wait','halt'] },
+          { label: 'Contacts HRBP before any further action', kw: ['hrbp','hr','people ops','people operations','contact hr','reach out to hr','call hr'] },
+          { label: 'Documents the employee\'s statement', kw: ['document','record','note','log','write down','save','written','capture'] },
+          { label: 'Recognizes this as a mandatory protected-class escalation', kw: ['protected','disability','protected class','discrimination','mandatory','required escalation','must escalate','legal','eeoc','civil rights'] },
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'documentation',
+    num: 6,
+    badge: 'Core',
+    title: 'Documentation & 3PR Reviews',
+    time: '6 min',
+    exCount: 1,
+    content: () => `
+<div class="mod-tag">Module 6</div>
+<h1 class="mod-title">Documentation & 3PR Reviews</h1>
+<p class="mod-sub">Clear documentation is both legal protection and a fair-process safeguard for your employees. Knowing who owns what — and when — prevents costly gaps.</p>
+<div class="mod-divider"></div>
+
+<div class="content-section">
+  <div class="content-h">Documentation Ownership</div>
+  <table class="data-table">
+    <tr><th>Owner</th><th>Responsible For</th></tr>
+    <tr><td><strong>Manager owns</strong></td><td>Day-to-day coaching notes · Email recaps · Performance examples · Week-to-week observations</td></tr>
+    <tr><td><strong>Manager creates, HRBP reviews</strong></td><td>Structured feedback memos · Pre-PIP warnings · PIP documents (with HRBP edits)</td></tr>
+    <tr><td><strong>HRBP owns</strong></td><td>PIP consultation records · Legal documentation · Termination documentation · Final employee file</td></tr>
+    <tr><td><strong>Both / shared</strong></td><td>All formal feedback docs (both keep copies) · All PIP-related emails (CC HRBP)</td></tr>
+  </table>
+</div>
+
+<div class="content-section">
+  <div class="content-h">The 3PR Rating Scale</div>
+  <div class="rating-row">
+    <div class="rating-card r4"><div class="rating-num">4</div><div class="rating-text">Fully Meets or Exceeds — NF's standard for excellent performance</div></div>
+    <div class="rating-card r3"><div class="rating-num">3</div><div class="rating-text">Generally Meets with Areas for Improvement — satisfactory with development needs</div></div>
+    <div class="rating-card r2"><div class="rating-num">2</div><div class="rating-text">Needs Support — significant concerns, formal intervention required</div></div>
+    <div class="rating-card r1"><div class="rating-num">1</div><div class="rating-text">N/A — Too New in Role (less than ~3 months)</div></div>
+  </div>
+</div>
+
+<div class="content-section">
+  <div class="content-h">Key 3PR Rules</div>
+  <p class="content-p">• Employees on an <strong>active PIP receive a rating of 2</strong> for each review period while on the PIP.<br>• Employees who <strong>recently completed a PIP</strong> still receive a 2 for that review period — their next review must show sustained improvement (3 or 4).<br>• A rating of 3 for <strong>more than two consecutive review periods</strong> is atypical — the employee should be progressing to a 4 or revealing broader concerns.<br>• A rating of 2 requires <strong>immediate coordination with HR</strong> to implement or continue formal performance management.</p>
+</div>
+
+<div class="content-section">
+  <div class="content-h">Common Manager Mistakes</div>
+  <div class="mistake-grid">
+    <div class="mistake-card"><div class="mistake-title">⛔ Avoiding the Conversation</div><div class="mistake-desc">The cost of avoidance is almost always higher than the conversation itself.</div></div>
+    <div class="mistake-card"><div class="mistake-title">⛔ Vague Feedback</div><div class="mistake-desc">"Be more strategic" is not feedback. Use SBI with specific, observable behavior.</div></div>
+    <div class="mistake-card"><div class="mistake-title">⛔ Surprising With a PIP</div><div class="mistake-desc">If a PIP is the first time someone hears a concern in writing, both the process and the employee are set up to fail.</div></div>
+    <div class="mistake-card"><div class="mistake-title">⛔ Reconstructing Notes Later</div><div class="mistake-desc">Notes written months after the fact look manufactured. Document contemporaneously — within 24 hours.</div></div>
+  </div>
+</div>
+`,
+    exercises: [
+      {
+        qLabel: 'Exercise 1 of 1',
+        scenario: 'An employee has been on a PIP for the entire review period. They just successfully completed the PIP last week — they met all their goals.',
+        question: 'What 3PR rating do you assign them? What are you required to write in the documentation section? Be specific about what must be included and why.',
+        minWords: 70,
+        rubric: [
+          { label: 'Assigns a rating of 2 (not 3 or 4)', kw: ['rating of 2','rating 2','score of 2','receives a 2','give a 2','assign a 2','2 —','2 –','needs support','still a 2'] },
+          { label: 'Documents the PIP and its outcome', kw: ['pip','performance improvement','formal plan','completed','concluded','finished the pip','pip was','on a pip'] },
+          { label: 'Includes specific examples or timeline of concerns', kw: ['specific','example','date','during the review','period','timeline','throughout','documented','concrete'] },
+          { label: 'Addresses what the next review must show', kw: ['next review','sustained','following review','3 or 4','improvement','next period','after pip','subsequent'] },
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'scenarios',
+    num: 7,
+    badge: 'Advanced',
+    title: 'Applying the Frameworks',
+    time: '8 min',
+    exCount: 1,
+    content: () => `
+<div class="mod-tag">Module 7</div>
+<h1 class="mod-title">Applying the Frameworks</h1>
+<p class="mod-sub">Bringing it all together — recognizing which tool to use, when to escalate, and how to handle edge cases that don't fit neatly into any one framework.</p>
+<div class="mod-divider"></div>
+
+<div class="content-section">
+  <div class="content-h">The Manager's Decision Flow</div>
+  <p class="content-p">When a performance issue surfaces, ask yourself these questions in order:</p>
+  <ul class="step-list">
+    <li class="step-item"><div class="step-badge">1</div><div class="step-content"><div class="step-label">Can't do, or won't do?</div><div class="step-example">Capability/skill gap → coaching path. Behavioral/policy violation → disciplinary path via HRBP.</div></div></li>
+    <li class="step-item"><div class="step-badge">2</div><div class="step-content"><div class="step-label">Have I given fair opportunity to correct?</div><div class="step-example">If no → coach first, document immediately. If yes and no improvement → escalate to HRBP.</div></div></li>
+    <li class="step-item"><div class="step-badge">3</div><div class="step-content"><div class="step-label">Are there any gray zone factors?</div><div class="step-example">Protected class? Retaliation risk? New manager to employee? → Consult HRBP before any action.</div></div></li>
+    <li class="step-item"><div class="step-badge">4</div><div class="step-content"><div class="step-label">What does my documentation show?</div><div class="step-example">Contemporaneous notes, email recaps, pattern of behavior. Weak documentation = weak case.</div></div></li>
+  </ul>
+</div>
+
+<div class="callout red"><div class="callout-icon">🚨</div><div><strong>Going it alone is one of the biggest manager mistakes.</strong> HRBPs exist to help. A 10-minute consult before a conversation can prevent a 3-month legal problem. Use them earlier, not later.</div></div>
+
+<div class="content-section">
+  <div class="content-h">Success Metrics — How Do You Know It's Working?</div>
+  <table class="data-table">
+    <tr><th>Leading Indicators</th><th>Lagging Indicators</th></tr>
+    <tr><td>% of weekly 1:1s held on schedule</td><td>Engagement scores within the team</td></tr>
+    <tr><td>% of direct reports with up-to-date running notes</td><td>Voluntary attrition (esp. regrettable)</td></tr>
+    <tr><td>Time from issue surfacing to first documented coaching</td><td>PIP success rate (completion vs. termination)</td></tr>
+    <tr><td>% of formal memos reviewed by HRBP before delivery</td><td>Number of formal complaints or grievances</td></tr>
+  </table>
+</div>
+`,
+    exercises: [
+      {
+        qLabel: 'Exercise 1 of 1',
+        scenario: 'A new direct report (2 months in role) is struggling with time management. In two separate coaching sessions, you used SBI and gave specific feedback. You haven\'t seen improvement. A colleague suggests: "Just put them on a PIP — you\'ve already talked to them twice."',
+        question: 'Do you follow your colleague\'s advice? Walk through your full decision-making process using what you\'ve learned in this training. Reference specific frameworks and escalation rules.',
+        minWords: 90,
+        rubric: [
+          { label: 'Identifies this as Coaching Territory (too new for PIP)', kw: ['coaching territory','new to role','2 month','two month','too early','not yet','not pip','coaching first','premature','not appropriate'] },
+          { label: 'Applies the "Can\'t Do / Won\'t Do" test', kw: ["can't do","won't do","capability","skill","trying","motivated","misconduct","behavioral","performance issue"] },
+          { label: 'Plans to consult HRBP before escalating further', kw: ['hrbp','hr','people ops','people operations','consult','check in with','reach out to'] },
+          { label: 'References documentation of coaching history', kw: ['document','notes','record','written','recap','history','pattern','prior','email'] },
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 'capstone',
+    num: 8,
+    badge: 'Capstone',
+    title: 'Final Assessment',
+    time: '10 min',
+    exCount: 2,
+    content: () => `
+<div class="mod-tag">Module 8 — Capstone</div>
+<h1 class="mod-title">Final Assessment</h1>
+<p class="mod-sub">Demonstrate mastery of the Performance Management Playbook with two open-ended assessments. Both must pass to complete your training.</p>
+<div class="mod-divider"></div>
+
+<div class="callout navy"><div class="callout-icon">📋</div><div><strong>Instructions:</strong> These exercises require thorough, specific answers. Reference frameworks, timelines, and rules from the playbook by name. Generic or vague answers will not pass. Both exercises must be passed to complete this module.</div></div>
+
+<div class="content-section">
+  <div class="content-h">Quick Framework Reference</div>
+  <p class="content-p"><strong>SBI(I)</strong> — Situation · Behavior · Impact · Intent (ask). <strong>GROW</strong> — Goal · Reality · Options · Will. <strong>Decision Matrix</strong> — Coaching Territory · Gray Zone · PIP Territory. <strong>"Can't Do / Won't Do"</strong> — capability → coaching/PIP; behavioral → disciplinary via HRBP. <strong>3PR Ratings</strong> — 4 (excellent), 3 (meets with gaps), 2 (needs support / active PIP), 1 (too new). <strong>Escalation triggers</strong> — any PIP, protected-class concern, potential termination, legal pushback.</p>
+</div>
+`,
+    exercises: [
+      {
+        qLabel: 'Exercise 1 of 2',
+        question: 'Describe the complete, step-by-step process for managing a performance issue — from first observation all the way through PIP initiation. Reference specific frameworks, documentation rules, and timelines from the playbook.',
+        minWords: 120,
+        rubric: [
+          { label: 'Starts with informal coaching and SBI feedback', kw: ['sbi','informal','coaching','first conversation','feedback','observe','situation','behavior','impact'] },
+          { label: 'Sends written recap within 24 hours', kw: ['24 hour','24-hour','email recap','written','document','same day','within 24'] },
+          { label: 'Escalates to HRBP at the right stage', kw: ['hrbp','hr','people ops','consult','loop in','escalat','reach out'] },
+          { label: 'References the 5-stage progression or pre-PIP warning', kw: ['stage','structured feedback','formal memo','pre-pip','warning','progression','escalat'] },
+          { label: 'Mentions PIP timeline (30–90 days) or check-ins', kw: ['30','60','90','days','weeks','timeline','duration','check-in','check in','progress meeting'] },
+        ]
+      },
+      {
+        qLabel: 'Exercise 2 of 2',
+        question: 'Name five things a manager must NEVER do in performance management. For each one, explain specifically why it matters — what can go wrong if you do it.',
+        minWords: 120,
+        rubric: [
+          { label: 'Never surprise an employee with a PIP', kw: ['surprise','first time','unexpected','no warning','blindside','never heard','hasn\'t been told'] },
+          { label: 'Never write documentation retroactively / after the fact', kw: ['retroactive','after the fact','contemporan','24 hour','later','reconstruct','manufactured','backdated','after-the-fact'] },
+          { label: 'Never skip HRBP consultation for formal stages', kw: ['hrbp','skip','alone','without hr','go it alone','consult','loop in','bypass'] },
+          { label: 'Never use vague feedback (must be SBI-based)', kw: ['vague','specific','sbi','observable','concrete','measurable','general','unclear','ambiguous'] },
+          { label: 'Never treat misconduct as a performance issue (or vice versa)', kw: ['misconduct','disciplin','can\'t do','won\'t do','behavioral','policy','performance issue','wrong process'] },
+        ]
+      }
+    ]
+  }
+];
+
+// ── Render home grid ──
+function renderHome() {
+  const grid = document.getElementById('home-grid');
+  grid.innerHTML = '';
+  MODULES.forEach(mod => {
+    const done = completedModules.has(mod.id);
+    const pct = done ? 100 : 0;
+    const ctaText = done ? '✓ Completed' : 'Start Module →';
+    const ctaClass = done ? 'card-cta done' : 'card-cta';
+    const badgeClass = mod.badge === 'Core' ? 'badge-core' : mod.badge === 'Advanced' ? 'badge-adv' : 'badge-cap';
+    const statusText = done ? `${mod.exCount}/${mod.exCount} exercises` : 'Not started';
+
+    grid.innerHTML += `
+      <div class="module-wrapper">
+        <div class="module-card" onclick="openModule('${mod.id}')">
+          <div class="card-top">
+            <span class="track-label">Module ${mod.num}</span>
+            <span class="badge ${badgeClass}">${mod.badge}</span>
+          </div>
+          <h3 class="card-title">${mod.title}</h3>
+          <div class="card-meta">~${mod.time} · ${mod.exCount} exercise${mod.exCount > 1 ? 's' : ''}</div>
+          <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+          <div class="card-count">${statusText}</div>
+        </div>
+        <button class="${ctaClass}" onclick="openModule('${mod.id}')">${ctaText}</button>
+      </div>
+    `;
+  });
+}
+
+// ── Open a module ──
+function openModule(id) {
+  const mod = MODULES.find(m => m.id === id);
+  if (!mod) return;
+  currentModule = mod;
+  exercisesPassed = {};
+
+  document.getElementById('mod-topbar-label').textContent = `Module ${mod.num} — ${mod.title}`;
+  document.getElementById('mod-content').innerHTML = mod.content();
+  renderExercises(mod);
+  updateCompletionBar();
+
+  showPage('page-module');
+  window.scrollTo(0, 0);
+}
+
+// ── Render exercises ──
+function renderExercises(mod) {
+  const section = document.getElementById('ex-section');
+  let html = `
+    <div class="ex-header"><span class="ex-badge">Practice Exercise${mod.exercises.length > 1 ? 's' : ''}</span></div>
+    <div class="ex-title">Apply What You've Learned</div>
+    <div class="ex-sub">Answer the question${mod.exercises.length > 1 ? 's' : ''} below in your own words. Your response will be evaluated against key concepts from this module. <strong>You must address all concepts to unlock completion.</strong></div>
+  `;
+
+  mod.exercises.forEach((ex, i) => {
+    html += `
+      <div class="ex-card" id="ex-card-${i}">
+        <div class="ex-q-num">${ex.qLabel}</div>
+        ${ex.scenario ? `<div class="ex-scenario"><strong>Scenario:</strong> ${ex.scenario}</div>` : ''}
+        <div class="ex-question">${ex.question}</div>
+        <textarea class="ex-textarea" id="ex-textarea-${i}" placeholder="Write your response here… (minimum ${ex.minWords} words)" oninput="onTextareaInput(${i})"></textarea>
+        <div class="ex-meta">
+          <span class="ex-word-count" id="ex-wc-${i}">0 / ${ex.minWords} words minimum</span>
+          <button class="submit-btn" id="ex-submit-${i}" onclick="gradeExercise(${i})" disabled>Submit for Review</button>
+        </div>
+        <div class="rubric-result" id="rubric-result-${i}"></div>
+      </div>
+    `;
+  });
+
+  section.innerHTML = html;
+}
+
+// ── Word count tracker ──
+function onTextareaInput(idx) {
+  const textarea = document.getElementById(`ex-textarea-${idx}`);
+  const wc = document.getElementById(`ex-wc-${idx}`);
+  const submitBtn = document.getElementById(`ex-submit-${idx}`);
+  const mod = currentModule;
+  const ex = mod.exercises[idx];
+
+  const words = countWords(textarea.value);
+  const meetsMin = words >= ex.minWords;
+
+  wc.textContent = `${words} / ${ex.minWords} words minimum`;
+  wc.className = `ex-word-count ${meetsMin ? 'ok' : words > 0 ? 'warn' : ''}`;
+  submitBtn.disabled = !meetsMin;
+}
+
+function countWords(text) {
+  return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+}
+
+// ── Grade an exercise ──
+function gradeExercise(idx) {
+  const mod = currentModule;
+  const ex = mod.exercises[idx];
+  const response = document.getElementById(`ex-textarea-${idx}`).value.toLowerCase();
+  const resultEl = document.getElementById(`rubric-result-${idx}`);
+
+  const results = ex.rubric.map(item => ({
+    label: item.label,
+    passed: item.kw.some(kw => response.includes(kw.toLowerCase()))
+  }));
+
+  const allPassed = results.every(r => r.passed);
+  const passCount = results.filter(r => r.passed).length;
+
+  let rubricHtml = '<div style="margin-bottom:10px;">';
+  results.forEach(r => {
+    rubricHtml += `
+      <div class="rubric-item">
+        <span class="rubric-icon">${r.passed ? '✅' : '❌'}</span>
+        <span class="rubric-label ${r.passed ? '' : 'miss'}">${r.label}</span>
+      </div>
+    `;
+  });
+  rubricHtml += '</div>';
+
+  if (allPassed) {
+    rubricHtml += `<div class="rubric-summary pass">✅ All concepts addressed. Excellent work! This exercise is complete.</div>`;
+    exercisesPassed[idx] = true;
+    document.getElementById(`ex-submit-${idx}`).disabled = true;
+    document.getElementById(`ex-textarea-${idx}`).disabled = true;
+  } else {
+    const missed = results.filter(r => !r.passed).map(r => r.label).join('; ');
+    rubricHtml += `<div class="rubric-summary fail">❌ ${passCount}/${results.length} concepts addressed. Your response didn't clearly cover: <em>${missed}</em>. Revise your answer and resubmit.</div>`;
+    rubricHtml += `<button class="try-again-btn" onclick="resetExercise(${idx})">Revise Answer</button>`;
+    exercisesPassed[idx] = false;
+  }
+
+  resultEl.innerHTML = rubricHtml;
+  resultEl.classList.add('show');
+  updateCompletionBar();
+}
+
+// ── Reset exercise for retry ──
+function resetExercise(idx) {
+  const resultEl = document.getElementById(`rubric-result-${idx}`);
+  const submitBtn = document.getElementById(`ex-submit-${idx}`);
+  const textarea = document.getElementById(`ex-textarea-${idx}`);
+  resultEl.classList.remove('show');
+  textarea.disabled = false;
+  submitBtn.disabled = false;
+  exercisesPassed[idx] = false;
+  updateCompletionBar();
+}
+
+// ── Update complete bar ──
+function updateCompletionBar() {
+  const mod = currentModule;
+  const totalEx = mod.exercises.length;
+  const passedEx = Object.values(exercisesPassed).filter(Boolean).length;
+  const allDone = passedEx === totalEx;
+
+  const status = document.getElementById('complete-status');
+  const btn = document.getElementById('complete-btn');
+
+  if (allDone) {
+    status.innerHTML = `<strong>All exercises complete!</strong> Click to mark this module finished.`;
+    btn.removeAttribute('disabled');
+  } else {
+    status.innerHTML = `<strong>${passedEx}/${totalEx}</strong> exercise${totalEx > 1 ? 's' : ''} passed. Complete all to unlock.`;
+    btn.setAttribute('disabled', true);
+  }
+}
+
+// ── Mark module complete ──
+function completeModule() {
+  if (!currentModule) return;
+  completedModules.add(currentModule.id);
+  goHome();
+}
+
+// ── Navigation ──
+function goHome() {
+  renderHome();
+  showPage('page-home');
+  window.scrollTo(0, 0);
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Init ──
+renderHome();
+</script>
+</body>
+</html>
