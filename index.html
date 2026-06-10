@@ -479,13 +479,205 @@ body {
   .matrix { grid-template-columns: 1fr; }
   .complete-bar { padding: 12px 20px; }
 }
+
+/* ── Login ── */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 24px;
+}
+
+.login-inner { width: 100%; max-width: 420px; }
+
+.login-wordmark {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 28px;
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.login-sub {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 32px;
+  line-height: 1.55;
+}
+
+.login-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+}
+
+.login-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 7px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text);
+  background: white;
+  transition: border-color 0.2s;
+  margin-bottom: 14px;
+}
+
+.login-input:focus { outline: none; border-color: var(--teal); }
+
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.login-btn:hover { background: var(--blue); }
+
+.login-error {
+  font-size: 13px;
+  color: var(--accent);
+  margin-bottom: 10px;
+  min-height: 18px;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.login-divider::before, .login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.return-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.return-row:hover { border-color: var(--teal); }
+
+.return-info { display: flex; flex-direction: column; gap: 2px; }
+.return-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--teal); }
+.return-email { font-size: 14px; font-weight: 600; color: var(--text); }
+.return-arrow { color: var(--blue); font-size: 18px; }
+
+/* ── Topbar user chip ── */
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.signout-btn {
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: white;
+  transition: border-color 0.15s;
+}
+
+.signout-btn:hover { border-color: var(--accent); color: var(--accent); }
 </style>
 </head>
 <body>
 
+<!-- ══════════════════════ LOGIN ══════════════════════ -->
+<div id="page-login" class="page active">
+  <div class="login-page">
+    <div class="login-inner">
+      <div class="login-wordmark">NeuroFlow</div>
+      <h1 class="login-title">Manager Performance Training</h1>
+      <p class="login-sub">Eight self-paced modules based on the NF Performance Management Playbook. Enter your work email to begin — your progress saves automatically.</p>
+      <div class="login-card">
+        <div id="return-block" style="display:none;">
+          <div class="return-row" onclick="continueAsReturning()">
+            <div class="return-info">
+              <span class="return-label">Continue as</span>
+              <span class="return-email" id="return-email-display"></span>
+            </div>
+            <span class="return-arrow">→</span>
+          </div>
+          <div class="login-divider">or sign in as someone else</div>
+        </div>
+        <label class="login-label" for="login-email-input">Work email</label>
+        <input type="email" id="login-email-input" class="login-input" placeholder="you@neuroflow.com" onkeydown="if(event.key==='Enter')handleLogin()" />
+        <div class="login-error" id="login-error"></div>
+        <button class="login-btn" onclick="handleLogin()">Continue →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════════════ HOME ══════════════════════ -->
-<div id="page-home" class="page active">
-  <div class="topbar">NeuroFlow</div>
+<div id="page-home" class="page">
+  <div class="topbar">
+    <span>NeuroFlow</span>
+    <div class="topbar-right" id="home-user-chip"></div>
+  </div>
   <div class="home-wrap">
     <div class="home-label">People Operations</div>
     <h1 class="home-title">Manager Performance Training</h1>
@@ -501,6 +693,7 @@ body {
     <a class="topbar-back" onclick="goHome()">← All Modules</a>
     <span style="color:var(--border)">|</span>
     <span id="mod-topbar-label" style="color:var(--muted)"></span>
+    <div class="topbar-right" id="mod-user-chip"></div>
   </div>
   <div class="module-wrap">
     <div id="mod-content"></div>
@@ -513,10 +706,111 @@ body {
 </div>
 
 <script>
+// ── Tracking webhook ──
+// Paste your Google Apps Script web app URL here after setup:
+const TRACKING_WEBHOOK = '';
+
 // ── State ──
 const completedModules = new Set();
 let currentModule = null;
-let exercisesPassed = {}; // { exIdx: bool }
+let exercisesPassed = {};
+
+// ── Auth & Progress ──
+function getStoredEmail() {
+  return localStorage.getItem('nf_training_email') || '';
+}
+
+function storeEmail(email) {
+  localStorage.setItem('nf_training_email', email);
+}
+
+function loadProgress(email) {
+  try {
+    const raw = localStorage.getItem('nf_progress_' + email);
+    return raw ? JSON.parse(raw) : { completed: [] };
+  } catch(e) { return { completed: [] }; }
+}
+
+function saveProgress(email, completedArr) {
+  localStorage.setItem('nf_progress_' + email, JSON.stringify({
+    completed: completedArr,
+    lastSeen: Date.now()
+  }));
+}
+
+function getInitials(email) {
+  const name = email.split('@')[0];
+  const parts = name.split(/[.\-_]/);
+  return parts.slice(0, 2).map(p => p[0].toUpperCase()).join('');
+}
+
+function renderUserChip() {
+  const email = getStoredEmail();
+  if (!email) return;
+  const chip = `
+    <div class="user-chip">
+      <div class="user-avatar">${getInitials(email)}</div>
+      <span style="font-size:13px;color:var(--muted);">${email}</span>
+      <button class="signout-btn" onclick="signOut()">Sign out</button>
+    </div>`;
+  const homeChip = document.getElementById('home-user-chip');
+  const modChip  = document.getElementById('mod-user-chip');
+  if (homeChip) homeChip.innerHTML = chip;
+  if (modChip)  modChip.innerHTML  = chip;
+}
+
+function handleLogin() {
+  const input = document.getElementById('login-email-input');
+  const errorEl = document.getElementById('login-error');
+  const email = input.value.trim().toLowerCase();
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    errorEl.textContent = 'Please enter a valid email address.';
+    return;
+  }
+  errorEl.textContent = '';
+  storeEmail(email);
+  applyProgress(email);
+  renderUserChip();
+  renderHome();
+  showPage('page-home');
+}
+
+function continueAsReturning() {
+  const email = getStoredEmail();
+  if (!email) return;
+  applyProgress(email);
+  renderUserChip();
+  renderHome();
+  showPage('page-home');
+}
+
+function applyProgress(email) {
+  const progress = loadProgress(email);
+  completedModules.clear();
+  (progress.completed || []).forEach(id => completedModules.add(id));
+}
+
+function signOut() {
+  localStorage.removeItem('nf_training_email');
+  completedModules.clear();
+  showPage('page-login');
+}
+
+async function trackCompletion(email, moduleId, moduleTitle, moduleNum) {
+  if (!TRACKING_WEBHOOK) return;
+  try {
+    fetch(TRACKING_WEBHOOK, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        email, moduleId, moduleTitle,
+        moduleNum: 'Module ' + moduleNum
+      })
+    });
+  } catch(e) { /* fail silently */ }
+}
 
 // ── Module definitions ──
 const MODULES = [
@@ -979,22 +1273,6 @@ function renderHome() {
   });
 }
 
-// ── Open a module ──
-function openModule(id) {
-  const mod = MODULES.find(m => m.id === id);
-  if (!mod) return;
-  currentModule = mod;
-  exercisesPassed = {};
-
-  document.getElementById('mod-topbar-label').textContent = `Module ${mod.num} — ${mod.title}`;
-  document.getElementById('mod-content').innerHTML = mod.content();
-  renderExercises(mod);
-  updateCompletionBar();
-
-  showPage('page-module');
-  window.scrollTo(0, 0);
-}
-
 // ── Render exercises ──
 function renderExercises(mod) {
   const section = document.getElementById('ex-section');
@@ -1120,14 +1398,34 @@ function updateCompletionBar() {
 // ── Mark module complete ──
 function completeModule() {
   if (!currentModule) return;
+  const email = getStoredEmail();
   completedModules.add(currentModule.id);
+  if (email) {
+    saveProgress(email, [...completedModules]);
+    trackCompletion(email, currentModule.id, currentModule.title, currentModule.num);
+  }
   goHome();
 }
 
 // ── Navigation ──
 function goHome() {
+  renderUserChip();
   renderHome();
   showPage('page-home');
+  window.scrollTo(0, 0);
+}
+
+function openModule(id) {
+  const mod = MODULES.find(m => m.id === id);
+  if (!mod) return;
+  currentModule = mod;
+  exercisesPassed = {};
+  document.getElementById('mod-topbar-label').textContent = `Module ${mod.num} — ${mod.title}`;
+  document.getElementById('mod-content').innerHTML = mod.content();
+  renderExercises(mod);
+  updateCompletionBar();
+  renderUserChip();
+  showPage('page-module');
   window.scrollTo(0, 0);
 }
 
@@ -1137,7 +1435,21 @@ function showPage(id) {
 }
 
 // ── Init ──
-renderHome();
+(function init() {
+  const email = getStoredEmail();
+  if (email) {
+    // Show returning user block on login screen
+    document.getElementById('return-email-display').textContent = email;
+    document.getElementById('return-block').style.display = 'block';
+    // Auto-restore and go home
+    applyProgress(email);
+    renderUserChip();
+    renderHome();
+    showPage('page-home');
+  } else {
+    showPage('page-login');
+  }
+})();
 </script>
 </body>
 </html>
